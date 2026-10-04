@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>GO! | Exportar PNG e ICO</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@800&family=Hanken+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Hanken Grotesk',system-ui,sans-serif;background:#EEF0F3;color:#0F1114;margin:0;padding:40px 24px}
+main{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{margin:0;font-size:32px}
+p{margin:0;line-height:1.5;color:#3A404A}
+button{height:48px;padding:0 24px;border:0;border-radius:8px;background:#0F1114;color:#fff;font:700 16px 'Hanken Grotesk',sans-serif;cursor:pointer;align-self:flex-start}
+#msg{font-size:14px;color:#5B6270}
+#out{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.item{background:#fff;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:12px;word-break:break-all}
+.item .pv{height:110px;display:flex;align-items:center;justify-content:center;background:repeating-conic-gradient(#e6e8ec 0 25%,#fff 0 50%) 0 0/16px 16px;border-radius:6px}
+.item img{max-width:100%;max-height:100px}
+.item a{color:#0A7A4E;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+<h1>Exportar PNG e ICO da GO!</h1>
+<p>Abra esta página no navegador, com internet (ela carrega a fonte Unbounded do Google Fonts). Clique em gerar e baixe cada arquivo pelo link. O favicon.ico já vem com 16, 32 e 48 px.</p>
+<button id="gerar">Gerar arquivos</button>
+<div id="msg"></div>
+<div id="out"></div>
+</main>
+<script>
+const VERDE='#0A9E64', GRAFITE='#0F1114', CLARO='#F4F5F7', BRANCO='#FFFFFF';
+const out=document.getElementById('out'), msg=document.getElementById('msg');
+
+function cv(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c;}
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function texto(ctx,partes,fs,cx,cy){
+  ctx.font='800 '+fs+'px Unbounded';
+  ctx.letterSpacing=(-0.05*fs)+'px';
+  ctx.textBaseline='alphabetic';
+  const larg=partes.map(p=>ctx.measureText(p[0]).width);
+  const total=larg.reduce((a,b)=>a+b,0)+0.05*fs; // tira o espaco extra depois da ultima letra
+  let x=cx-total/2;
+  const y=cy+0.35*fs;
+  partes.forEach((p,i)=>{ctx.fillStyle=p[1];ctx.fillText(p[0],x,y);x+=larg[i];});
+  return total;
+}
+function horizontal(cTexto,cBang){
+  const fs=300, tmp=cv(10,10).getContext('2d');
+  tmp.font='800 '+fs+'px Unbounded'; tmp.letterSpacing=(-0.05*fs)+'px';
+  const t=tmp.measureText('GO!').width, W=Math.round(t+fs*0.8), H=Math.round(fs*1.2);
+  const c=cv(W,H), ctx=c.getContext('2d');
+  texto(ctx,[['GO',cTexto],['!',cBang]],fs,W/2,H/2);
+  return c;
+}
+function icone(size,fundo,letras,variante){
+  const c=cv(size,size), ctx=c.getContext('2d');
+  ctx.fillStyle=fundo; rr(ctx,0,0,size,size,size*0.22); ctx.fill();
+  if(variante==='G') texto(ctx,[['G',letras],['!',VERDE]],size*0.58,size/2,size/2);
+  else texto(ctx,[['GO',letras],['!',VERDE]],size*0.35,size/2,size/2);
+  return c;
+}
+function avatar(size){
+  const c=cv(size,size), ctx=c.getContext('2d');
+  ctx.fillStyle=GRAFITE; ctx.beginPath(); ctx.arc(size/2,size/2,size/2,0,Math.PI*2); ctx.fill();
+  texto(ctx,[['GO',CLARO],['!',VERDE]],size*0.3,size/2,size/2);
+  return c;
+}
+const blob=c=>new Promise(r=>c.toBlob(r,'image/png'));
+function add(nome,b){
+  const url=URL.createObjectURL(b), d=document.createElement('div'); d.className='item';
+  d.innerHTML='<div class="pv"><img src="'+url+'"></div><span>'+nome+'</span><a href="'+url+'" download="'+nome+'">Baixar</a>';
+  out.appendChild(d);
+}
+function ico(blobs,sizes){
+  return Promise.all(blobs.map(b=>b.arrayBuffer())).then(bufs=>{
+    const n=bufs.length, head=6+16*n;
+    let off=head; const total=head+bufs.reduce((a,b)=>a+b.byteLength,0);
+    const buf=new ArrayBuffer(total), dv=new DataView(buf), u8=new Uint8Array(buf);
+    dv.setUint16(0,0,true); dv.setUint16(2,1,true); dv.setUint16(4,n,true);
+    bufs.forEach((b,i)=>{
+      const e=6+16*i, s=sizes[i];
+      dv.setUint8(e,s>=256?0:s); dv.setUint8(e+1,s>=256?0:s); dv.setUint8(e+2,0); dv.setUint8(e+3,0);
+      dv.setUint16(e+4,1,true); dv.setUint16(e+6,32,true);
+      dv.setUint32(e+8,b.byteLength,true); dv.setUint32(e+12,off,true);
+      u8.set(new Uint8Array(b),off); off+=b.byteLength;
+    });
+    return new Blob([buf],{type:'image/x-icon'});
+  });
+}
+document.getElementById('gerar').onclick=async()=>{
+  out.innerHTML=''; msg.textContent='Carregando a fonte...';
+  await document.fonts.load('800 100px Unbounded'); await document.fonts.ready;
+  if(!document.fonts.check('800 100px Unbounded')){msg.textContent='A fonte Unbounded nao carregou. Confira a internet e tente de novo.';return;}
+  msg.textContent='Gerando...';
+  add('go-logo-sobre-fundo-claro.png',await blob(horizontal(GRAFITE,VERDE)));
+  add('go-logo-sobre-fundo-escuro.png',await blob(horizontal(CLARO,VERDE)));
+  add('go-logo-uma-cor-preto.png',await blob(horizontal(GRAFITE,GRAFITE)));
+  add('go-logo-uma-cor-branco.png',await blob(horizontal(BRANCO,BRANCO)));
+  for(const s of [512,192,180,64]){
+    add('go-icone-fundo-escuro-'+s+'.png',await blob(icone(s,GRAFITE,CLARO)));
+    add('go-icone-fundo-claro-'+s+'.png',await blob(icone(s,CLARO,GRAFITE)));
+  }
+  add('go-avatar-redondo-512.png',await blob(avatar(512)));
+  const fav=[[16,'G'],[32,'GO'],[48,'GO']], fb=[];
+  for(const [s,v] of fav){const b=await blob(icone(s,GRAFITE,CLARO,v)); fb.push(b); add('go-favicon-'+s+'.png',b);}
+  add('favicon.ico',await ico(fb,fav.map(f=>f[0])));
+  msg.textContent='Pronto. Baixe os arquivos que precisar.';
+};
+</script>
+</body>
+</html>

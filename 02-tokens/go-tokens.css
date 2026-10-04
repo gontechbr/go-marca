@@ -1,0 +1,29 @@
+/* GO! | tokens de marca (logo A) */
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@800&family=Hanken+Grotesk:wght@400;500;700&display=swap');
+
+:root {
+  --go-verde: #0A9E64;
+  --go-grafite: #0F1114;
+  --go-claro: #F4F5F7;
+  --go-cinza: #5B6270;
+
+  --go-fonte-logo: 'Unbounded', sans-serif;
+  --go-fonte-texto: 'Hanken Grotesk', system-ui, sans-serif;
+}
+
+/* Logo: <span class="go-logo">GO<span class="go-bang">!</span></span> */
+.go-logo {
+  font-family: var(--go-fonte-logo);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: var(--go-grafite);
+}
+.go-logo .go-bang { color: var(--go-verde); }
+
+/* Em fundo escuro */
+.go-escuro .go-logo { color: var(--go-claro); }
+
+/* Uma cor (carimbo e impressão) */
+.go-uma-cor .go-logo,
+.go-uma-cor .go-logo .go-bang { color: currentColor; }

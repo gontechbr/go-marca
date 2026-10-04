@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+<style>@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@800&amp;display=swap');</style>
+<rect width="256" height="256" rx="56" fill="#0F1114"/>
+<text x="128" y="180" text-anchor="middle" font-family="Unbounded, sans-serif" font-weight="800" font-size="150" letter-spacing="-6" fill="#F4F5F7">G<tspan fill="#0A9E64">!</tspan></text>
+</svg>
