@@ -16,6 +16,17 @@ Esta pasta junta o que já está pronto para usar e as regras para usar sempre d
 
 Todos os arquivos `.html` abrem direto no navegador. Eles carregam a fonte do Google Fonts, então precisam de internet.
 
+## Ver no navegador
+
+O repo é publicado no GitHub Pages, então as páginas abrem sem clonar:
+
+- [Manual de uso](https://gontechbr.github.io/go-marca/04-referencia/manual-de-uso.html)
+- [Logo A escolhido](https://gontechbr.github.io/go-marca/04-referencia/logo-A-escolhido.html)
+- [Resumo das aplicações](https://gontechbr.github.io/go-marca/04-referencia/aplicacoes-resumo.html)
+- [Exportar PNG e ICO](https://gontechbr.github.io/go-marca/01-logo/exportar-png-e-ico.html)
+
+O site da GO! (repo [gontechbr.github.io](https://github.com/gontechbr/gontechbr.github.io)) usa as cores e fontes daqui.
+
 ## Padrões
 
 ### Nome
